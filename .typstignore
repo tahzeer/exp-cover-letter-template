@@ -1,0 +1,24 @@
+# this is not a "standard" ignore file, it's specific to this template's `scripts/package.sh` script
+# list any files here that should not be uploaded to Universe when releasing this package
+
+# if you are used to ignore files, be aware that .typstignore is a bit more limited:
+# - only this file is used; .typstignore files in subdirectories are not considered
+# - patterns must match file/directory names from the beginning: `x.typ` will not match `src/x.typ`
+# - `*` in patterns works, but also matches directory separators: `*.typ` _will_ match `src/x.typ`
+# .git and .typstignore are excluded automatically
+
+.github
+.gitattributes
+.gitignore
+scripts
+tests
+build
+Justfile
+# Docs sources stay out; PDF manuals are committed for README links (also
+# excluded in typst.toml so they are not in the download archive).
+docs/*
+!docs/*.pdf
+
+# Sample PDF stays out of Universe; PNG is linked from README so it must be
+# committed (and listed under typst.toml exclude).
+example-letter.pdf
