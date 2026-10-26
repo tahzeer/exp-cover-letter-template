@@ -19,10 +19,16 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v4
 
-      - name: Install just
-        run: |
-          curl --proto '=https' --tlsv1.2 -LsSf https://just.systems/install.sh | bash -s -- --to "$HOME/.local/bin"
-          echo "$HOME/.local/bin" >> "$GITHUB_PATH"
+      - name: Probe runner package cache
+        uses: awalsh128/cache-apt-pkgs-action@v1
+        with:
+          packages: cargo
+          version: 1.0
+
+      - name: Install just from crates.io
+        uses: baptiste0928/cargo-install@v3
+        with:
+          crate: just
 
       - name: Setup typst
         uses: typst-community/setup-typst@v3
