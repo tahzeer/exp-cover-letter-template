@@ -1,21 +1,19 @@
 # Architecture
 
-This repository is the `exp-cover-letter` package. Real letters stay outside
-it. The only letter in git is the John Doe starter in `template/`.
+This repository is the `exp-cover-letter` package.
 
-The header is copied from `exp-resume`, not imported. A letter release can
-ship without waiting on a resume version. Keep these in step with that
-package when the shared header changes:
-
-- New Computer Modern, 20pt name at weight 600, 10pt body
-- Contact items joined by `" | "`, phone link not underlined
-- Link text and link underline both use `accent-color`
+- New Computer Modern, 12pt body. The sender's name is bold at that size
+- Links use `accent-color`
 - US Letter, 0.5in margin
-- `default-spacing` in `src/spacing.typ`
+- `gap` of 20pt between blocks, set on `letter.with`. That measures 36px at 144ppi
+- `font-size` is set on `letter.with`. Default 12pt
+- Lines inside a block stay on `leading`. An empty field is skipped
 
-`src/letter.typ` prints the name, the contact row, then the date, recipient,
-subject, greeting, body, closing, and typed name. Empty strings are skipped.
-There is no section rule.
+`letter.with` sets the page, the font size, the gap, the date, and the closing. `#sender`
+prints the contact lines. `#recipient` prints the company lines and the
+greeting. The greeting uses `recipient-name` when it is set, and
+`recipient-title` otherwise. The body is the paragraphs. The name is printed
+again under the closing.
 
 ## Layout
 
@@ -23,7 +21,6 @@ There is no section rule.
 src/lib.typ        public exports
 src/letter.typ     page shell
 src/helpers.typ    linked-text
-src/spacing.typ    default-spacing
 template/main.typ  John Doe starter for `typst init`
 docs/manual.typ    manual, compiled to docs/manual.pdf at release
 tests/snapshot/    pixel test, Typst 0.15

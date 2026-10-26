@@ -1,10 +1,41 @@
 #import "helpers.typ": linked-text
-#import "spacing.typ": default-spacing, spacing-state
 
-#let letter(
+#let settings = state("exp-cl-settings", (
+  date: "",
+  gap: 20pt,
+  dated: false,
   author: "",
-  author-position: left,
-  personal-info-position: left,
+))
+
+#let absent(value) = {
+  value == none or (type(value) == str and value.trim() == "")
+}
+
+// One block. Lines inside it stay tight. Empty input prints nothing.
+#let line-block(lines, above: 0pt, below: 0pt) = {
+  let kept = lines.filter(line => not absent(line))
+  if kept.len() > 0 {
+    block(width: 100%, above: above, below: below)[
+      #for (i, line) in kept.enumerate() {
+        if i > 0 { linebreak() }
+        line
+      }
+    ]
+  }
+}
+
+// Date sits between the sender lines and the company. The first of
+// sender or recipient prints it, so a missing block does not drop it.
+#let place-date() = context {
+  let current = settings.get()
+  if not current.dated and not absent(current.date) {
+    settings.update(s => s + (dated: true))
+    line-block((current.date,), below: current.gap)
+  }
+}
+
+#let sender(
+  author: "",
   pronouns: "",
   location: "",
   email: "",
@@ -16,26 +47,66 @@
   phone: "",
   personal-site: "",
   personal-site-text: "",
-  accent-color: "#000000",
-  font: "New Computer Modern",
-  paper: "us-letter",
-  author-font-size: 20pt,
-  font-size: 10pt,
-  spacing: (:),
-  lang: "en",
-  date: "",
+) = {
+  settings.update(s => s + (author: author))
+  if not absent(author) {
+    set document(author: author, title: author)
+  }
+
+  context {
+    line-block(
+      (
+        if not absent(author) { strong(author) },
+        location,
+        linked-text(phone, link-prefix: "tel:"),
+        linked-text(email, link-prefix: "mailto:", text: email-text),
+        linked-text(linkedin, link-prefix: "https://", text: linkedin-text),
+        linked-text(github, link-prefix: "https://", text: github-text),
+        linked-text(personal-site, link-prefix: "https://", text: personal-site-text),
+        pronouns,
+      ),
+      below: settings.get().gap,
+    )
+    place-date()
+  }
+}
+
+#let recipient(
   recipient-name: "",
   recipient-title: "",
   company: "",
   company-address: "",
-  subject: "",
   greeting: "",
+) = context {
+  place-date()
+  line-block((company, company-address), below: settings.get().gap)
+  line-block(
+    (
+      if not absent(greeting) { greeting }
+      else if not absent(recipient-name) { [Dear #recipient-name,] }
+      else if not absent(recipient-title) { [Dear #recipient-title,] },
+    ),
+    below: settings.get().gap,
+  )
+}
+
+#let letter(
+  accent-color: "#000000",
+  font: "New Computer Modern",
+  paper: "us-letter",
+  font-size: 12pt,
+  gap: 20pt,
+  lang: "en",
+  date: "",
   closing: "",
   body,
 ) = {
-  let s = default-spacing + spacing
-
-  set document(author: author, title: author)
+  settings.update((
+    date: date,
+    gap: gap,
+    dated: false,
+    author: "",
+  ))
 
   set text(
     font: font,
@@ -49,92 +120,18 @@
     paper: paper,
   )
 
-  show link: it => {
-    if type(it.dest) == str and it.dest.starts-with("tel:") {
-      it
-    } else {
-      underline(
-        offset: s.link-offset,
-        stroke: s.rule-stroke.thickness + rgb(accent-color),
-        it,
-      )
-    }
+  show link: set text(fill: rgb(accent-color))
+
+  set par(leading: 0.55em, spacing: gap, justify: false)
+  set block(spacing: 0pt, above: 0pt, below: 0pt)
+
+  body
+
+  if not absent(closing) {
+    line-block((closing,), above: gap)
   }
 
-  show heading: set text(
-    fill: rgb(accent-color),
-  )
-
-  show link: set text(
-    fill: rgb(accent-color),
-  )
-
-  show heading.where(level: 1): it => [
-    #set align(author-position)
-    #set text(
-      weight: 600,
-      size: author-font-size,
-    )
-    #pad(it.body)
-  ]
-
-  spacing-state.update(s)
-
-  [= #(author)]
-
-  pad(
-    top: 0em,
-    bottom: s.after-header,
-    align(personal-info-position)[
-      #{
-        let items = (
-          linked-text(pronouns),
-          linked-text(phone, link-prefix: "tel:"),
-          linked-text(location),
-          linked-text(email, link-prefix: "mailto:", text: email-text),
-          linked-text(linkedin, link-prefix: "https://", text: linkedin-text),
-          linked-text(github, link-prefix: "https://", text: github-text),
-          linked-text(personal-site, link-prefix: "https://", text: personal-site-text),
-        )
-        items.filter(x => x != none).join(" | ")
-      }
-    ],
-  )
-
-  set par(leading: s.leading, spacing: s.gap, justify: false)
-
-  let kept-block(lines) = {
-    let kept = lines.filter(line => line != "")
-    if kept.len() > 0 {
-      block(width: 100%, above: s.gap, below: 0pt)[
-        #for (i, line) in kept.enumerate() {
-          if i > 0 { linebreak() }
-          line
-        }
-      ]
-    }
-  }
-
-  if date != "" {
-    block(width: 100%, above: s.gap, below: 0pt)[#date]
-  }
-  kept-block((recipient-name, recipient-title, company, company-address))
-  if subject != "" {
-    block(width: 100%, above: s.gap, below: 0pt)[#subject]
-  }
-  if greeting != "" {
-    block(width: 100%, above: s.gap, below: 0pt)[#greeting]
-  }
-
-  set par(justify: true)
-  block(width: 100%, above: s.gap, below: 0pt, body)
-
-  if closing != "" {
-    set par(justify: false)
-    block(width: 100%, above: s.gap, below: 0pt)[
-      #closing
-      #v(s.gap)
-      #author
-    ]
+  context {
+    line-block((settings.get().author,), above: gap)
   }
 }

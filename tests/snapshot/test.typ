@@ -1,39 +1,29 @@
 #import "../../src/lib.typ": *
 
-#let name = "John Doe"
-#let location = "Example City, EX"
-#let email = "john.doe@example.com"
-#let email-text = "john.doe@example.com"
-#let github = "github.com/johndoe"
-#let github-text = "johndoe"
-#let linkedin = "linkedin.com/in/johndoe"
-#let linkedin-text = "johndoe"
-#let phone = "+1 (xxx) xxx-xxxx"
-#let personal-site = "example.com"
-#let personal-site-text = "example.com"
-
 #show: letter.with(
-  author: name,
-  location: location,
-  email: email,
-  email-text: email-text,
-  github: github,
-  github-text: github-text,
-  linkedin: linkedin,
-  linkedin-text: linkedin-text,
-  phone: phone,
-  personal-site: personal-site,
-  personal-site-text: personal-site-text,
   accent-color: "#26428b",
-  author-position: center,
-  personal-info-position: center,
+  font-size: 12pt,
+  gap: 20pt,
   date: "October 26, 2026",
+  closing: "Yours sincerely,",
+)
+
+#sender(
+  author: "John Doe",
+  location: "Example City, EX",
+  phone: "+1 (xxx) xxx-xxxx",
+  email: "john.doe@example.com",
+  github: "github.com/johndoe",
+  github-text: "johndoe",
+  linkedin: "linkedin.com/in/johndoe",
+  linkedin-text: "johndoe",
+  personal-site: "example.com",
+)
+
+#recipient(
   recipient-name: "Ada Lovelace",
   recipient-title: "Hiring Manager",
   company: "Example Corporation",
-  subject: "Re: Software Engineer",
-  greeting: "Dear Ada Lovelace,",
-  closing: "Sincerely,",
 )
 
 The Software Engineer opening is the first posting I have seen that calls a failed deploy a product bug. That is the job I want.

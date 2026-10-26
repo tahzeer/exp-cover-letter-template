@@ -1,9 +1,8 @@
 # Exp Cover Letter
 
-A one-page cover letter whose header matches
-[exp-resume](https://github.com/tahzeer/exp-resume-template). Same font,
-sizes, contact row, and link color. The body is a letter, not a second
-resume.
+A one-page cover letter in the same type as
+[exp-resume](https://github.com/tahzeer/exp-resume-template). The sender
+block is one line per field. The body is the letter, not a second resume.
 
 Keep real letters outside this repository. The only letter in git is the
 John Doe starter.
@@ -36,14 +35,23 @@ typst init @preview/exp-cover-letter:0.1.0
 #import "@preview/exp-cover-letter:0.1.0": *
 
 #show: letter.with(
+  font: "New Computer Modern",
+  font-size: 12pt,
+  paper: "us-letter",
+  gap: 20pt,
+  date: "October 26, 2026",
+  closing: "Sincerely,",
+)
+
+#sender(
   author: "John Doe",
   email: "john.doe@example.com",
-  accent-color: "#000000",
-  date: "October 26, 2026",
+)
+
+#recipient(
   recipient-name: "Ada Lovelace",
+  recipient-title: "Hiring Manager",
   company: "Example Corporation",
-  greeting: "Dear Ada Lovelace,",
-  closing: "Sincerely,",
 )
 
 First paragraph.
@@ -53,8 +61,12 @@ Second paragraph.
 Third paragraph.
 ```
 
+`letter.with` is the page, the date, the closing, and the gap. `#sender` is
+the name and contact lines. `#recipient` is the company and the greeting.
 Contact fields use the same names as `resume.with`. An empty string drops
-that line. The [manual](docs/manual.pdf) lists every parameter.
+that line. The greeting uses `recipient-name` when it is set, and
+`recipient-title` otherwise. The [manual](docs/manual.pdf) lists every
+parameter.
 
 ## Local development
 

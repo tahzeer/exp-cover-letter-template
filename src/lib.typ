@@ -1,9 +1,7 @@
 /*
  * Package entrypoint; re-exports the public API.
- * The page shell lives in `letter.typ`. Spacing defaults live in `spacing.typ`.
- * The header rules match exp-resume. This package does not import it.
+ * The page shell lives in `letter.typ`.
  */
 
-#import "spacing.typ": default-spacing
 #import "helpers.typ": linked-text
-#import "letter.typ": letter
+#import "letter.typ": letter, sender, recipient
